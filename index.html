@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>6학년 졸업식: 나의 성취도상 찾기</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Jua&family=Noto+Sans+KR:wght@400;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <style>
+        body {
+            font-family: 'Noto Sans KR', sans-serif;
+            background-color: #f0fdf4; /* Light Green background */
+        }
+        h1, h2, .btn-text {
+            font-family: 'Jua', sans-serif;
+        }
+        .card-shadow {
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .progress-bar {
+            transition: width 0.3s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-green-50 to-blue-50 min-h-screen flex items-center justify-center p-4">
+
+    <!-- Main Container -->
+    <div class="bg-white max-w-lg w-full rounded-2xl card-shadow overflow-hidden relative min-h-[600px] flex flex-col">
+        
+        <!-- Header -->
+        <div class="bg-green-500 p-4 text-center text-white relative z-10">
+            <h1 class="text-2xl font-bold">🎓 졸업식 교육목표 성취도상</h1>
+            <p class="text-sm opacity-90 mt-1">나에게 꼭 맞는 상은 무엇일까요?</p>
+        </div>
+
+        <!-- Start Screen -->
+        <div id="start-screen" class="flex-1 flex flex-col items-center justify-center p-8 text-center fade-in">
+            <div class="text-6xl text-green-500 mb-6">
+                <i class="fas fa-graduation-cap"></i>
+            </div>
+            <h2 class="text-2xl text-gray-800 mb-4">나의 졸업상은?</h2>
+            <p class="text-gray-600 mb-8 leading-relaxed">
+                12가지 질문에 답하면<br>
+                나의 장점에 딱 맞는 상을 찾아줍니다.<br>
+                솔직하게 답변해 주세요!
+            </p>
+            <button onclick="startQuiz()" class="btn-text bg-green-500 hover:bg-green-600 text-white text-xl py-3 px-10 rounded-full transition transform hover:scale-105 shadow-lg">
+                시작하기
+            </button>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quiz-screen" class="hidden flex-1 flex flex-col p-6 fade-in">
+            <!-- Progress Bar -->
+            <div class="w-full bg-gray-200 rounded-full h-2.5 mb-4">
+                <div id="progress-bar" class="bg-green-500 h-2.5 rounded-full progress-bar" style="width: 0%"></div>
+            </div>
+
+            <!-- Question Number -->
+            <div class="text-green-600 font-bold mb-1 text-sm">
+                Question <span id="q-number">1</span> / 12
+            </div>
+
+            <!-- Question Text -->
+            <h2 id="question-text" class="text-xl text-gray-800 font-bold mb-2 min-h-[60px] flex items-center">
+                질문 내용이 여기에 표시됩니다.
+            </h2>
+            
+            <!-- Example Box -->
+            <div class="bg-blue-50 border border-blue-100 p-3 rounded-lg mb-6 flex items-start">
+                <span class="text-blue-500 mr-2 mt-0.5"><i class="fas fa-lightbulb"></i></span>
+                <p id="question-example" class="text-sm text-blue-800 leading-snug">
+                    예시 상황이 여기에 표시됩니다.
+                </p>
+            </div>
+
+            <!-- Options (5단계) -->
+            <div class="space-y-2 flex-1 flex flex-col justify-center">
+                <button onclick="selectOption(5)" class="w-full text-left p-3 rounded-xl border-2 border-gray-100 hover:border-green-500 hover:bg-green-50 transition flex items-center group">
+                    <span class="w-8 h-8 rounded-full bg-green-100 text-green-600 flex items-center justify-center mr-3 group-hover:bg-green-500 group-hover:text-white transition shrink-0">
+                        5
+                    </span>
+                    <span class="text-gray-700 font-medium group-hover:text-green-700">매우 그렇다</span>
+                </button>
+                <button onclick="selectOption(4)" class="w-full text-left p-3 rounded-xl border-2 border-gray-100 hover:border-teal-500 hover:bg-teal-50 transition flex items-center group">
+                    <span class="w-8 h-8 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center mr-3 group-hover:bg-teal-500 group-hover:text-white transition shrink-0">
+                        4
+                    </span>
+                    <span class="text-gray-700 font-medium group-hover:text-teal-700">그런 편이다</span>
+                </button>
+                <button onclick="selectOption(3)" class="w-full text-left p-3 rounded-xl border-2 border-gray-100 hover:border-gray-500 hover:bg-gray-50 transition flex items-center group">
+                    <span class="w-8 h-8 rounded-full bg-gray-100 text-gray-600 flex items-center justify-center mr-3 group-hover:bg-gray-500 group-hover:text-white transition shrink-0">
+                        3
+                    </span>
+                    <span class="text-gray-700 font-medium group-hover:text-gray-700">보통이다</span>
+                </button>
+                <button onclick="selectOption(2)" class="w-full text-left p-3 rounded-xl border-2 border-gray-100 hover:border-orange-400 hover:bg-orange-50 transition flex items-center group">
+                    <span class="w-8 h-8 rounded-full bg-orange-100 text-orange-600 flex items-center justify-center mr-3 group-hover:bg-orange-400 group-hover:text-white transition shrink-0">
+                        2
+                    </span>
+                    <span class="text-gray-700 font-medium group-hover:text-orange-700">그렇지 않은 편이다</span>
+                </button>
+                <button onclick="selectOption(1)" class="w-full text-left p-3 rounded-xl border-2 border-gray-100 hover:border-red-400 hover:bg-red-50 transition flex items-center group">
+                    <span class="w-8 h-8 rounded-full bg-red-100 text-red-600 flex items-center justify-center mr-3 group-hover:bg-red-400 group-hover:text-white transition shrink-0">
+                        1
+                    </span>
+                    <span class="text-gray-700 font-medium group-hover:text-red-700">전혀 그렇지 않다</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="hidden flex-1 flex flex-col items-center justify-center p-8 text-center fade-in">
+            <div class="animate-spin text-5xl text-green-500 mb-4">
+                <i class="fas fa-circle-notch"></i>
+            </div>
+            <h2 class="text-xl text-gray-700">결과를 분석하고 있습니다...</h2>
+        </div>
+
+        <!-- Result Screen -->
+        <div id="result-screen" class="hidden flex-1 flex flex-col items-center justify-center p-6 text-center fade-in">
+            <div class="text-yellow-400 text-6xl mb-4 animate-bounce">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <p class="text-gray-500 mb-2">당신에게 가장 잘 어울리는 상은</p>
+            <h2 id="result-title" class="text-3xl text-green-600 font-bold mb-4 border-b-2 border-green-200 pb-2 inline-block">
+                상 이름
+            </h2>
+            <p id="result-desc" class="text-gray-700 mb-8 bg-gray-50 p-4 rounded-lg leading-relaxed text-sm w-full">
+                설명
+            </p>
+            
+            <div class="flex space-x-3 w-full">
+                <button onclick="restartQuiz()" class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 py-3 rounded-xl transition font-bold">
+                    다시하기
+                </button>
+                <button onclick="shareResult()" class="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 rounded-xl transition font-bold shadow-md">
+                    <i class="fas fa-share-alt mr-2"></i>결과 공유
+                </button>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // 상 목록 및 데이터
+        // 0: 건강체력, 1: 교과학습, 2: 문화예술, 3: 봉사선행, 4: 우정배려, 5: 민주시민
+        const awards = [
+            {
+                id: 0,
+                title: "건강체력상",
+                desc: "몸이 튼튼하고 끈기 있는 어린이에게 주어지는 상입니다. 건강한 신체에 건강한 정신이 깃든다는 말처럼, 씩씩한 당신의 모습이 멋집니다!",
+                icon: "fa-heart-pulse"
+            },
+            {
+                id: 1,
+                title: "교과학습상",
+                desc: "스스로 공부하는 실력 있는 어린이에게 주어지는 상입니다. 배움에 대한 열정과 성실함으로 미래를 밝히는 당신이 자랑스럽습니다!",
+                icon: "fa-book-open"
+            },
+            {
+                id: 2,
+                title: "문화예술상",
+                desc: "예술 감수성이 뛰어난 어린이에게 주어지는 상입니다. 풍부한 감성과 창의력으로 세상을 아름답게 만드는 재능을 가지고 있군요!",
+                icon: "fa-palette"
+            },
+            {
+                id: 3,
+                title: "봉사선행상",
+                desc: "예절 바르고 서로 돕는 어린이에게 주어지는 상입니다. 남을 먼저 생각하는 따뜻한 마음씨가 주변 사람들에게 큰 힘이 됩니다.",
+                icon: "fa-hand-holding-heart"
+            },
+            {
+                id: 4,
+                title: "우정배려상",
+                desc: "교우관계가 원만하고 친구를 잘 돕는 어린이에게 주어지는 상입니다. 친구의 마음을 헤아릴 줄 아는 당신은 최고의 친구입니다.",
+                icon: "fa-user-group"
+            },
+            {
+                id: 5,
+                title: "민주시민상",
+                desc: "갈등을 원만히 해결하고 협동하는 어린이에게 주어지는 상입니다. 대화와 타협을 통해 문제를 해결하는 리더십을 갖추었군요!",
+                icon: "fa-scale-balanced"
+            }
+        ];
+
+        // 질문 목록 (총 12개, 각 상 당 2개씩 매핑 + 예시 추가)
+        const questions = [
+            { 
+                text: "나는 운동하거나 몸을 움직이는 활동을 좋아한다.", 
+                example: "예: 체육 시간에 제일 신나게 뛰거나, 쉬는 시간에 축구를 자주 해요.",
+                type: 0 
+            },
+            { 
+                text: "힘들거나 지치는 일이 있어도 끝까지 포기하지 않는다.", 
+                example: "예: 줄넘기 급수 따기나 오래 달리기 할 때 힘들어도 끝까지 해내요.",
+                type: 0 
+            },
+            { 
+                text: "새로운 지식을 배우거나 책을 읽는 것이 즐겁다.", 
+                example: "예: 궁금한 게 있으면 책을 찾아보거나, 다큐멘터리를 보는 게 재밌어요.",
+                type: 1 
+            },
+            { 
+                text: "수업 시간에 집중을 잘하고 과제를 성실히 수행한다.", 
+                example: "예: 선생님 말씀을 놓치지 않고 듣고, 숙제는 밀리지 않고 스스로 해요.",
+                type: 1 
+            },
+            { 
+                text: "그림 그리기, 노래하기, 악기 연주 등을 좋아한다.", 
+                example: "예: 틈만 나면 그림을 그리거나, 흥얼거리며 노래 부르는 걸 좋아해요.",
+                type: 2 
+            },
+            { 
+                text: "나만의 생각이나 느낌을 자유롭게 표현하는 것을 즐긴다.", 
+                example: "예: 내 기분을 그림이나 글로 표현하거나, 새로운 만들기를 좋아해요.",
+                type: 2 
+            },
+            { 
+                text: "선생님이나 학급을 위해 돕는 일에 보람을 느낀다.", 
+                example: "예: 1인 1역, 급식 당번, 청소 등을 할 때 친구들을 위해 열심히 해요.",
+                type: 3 
+            },
+            { 
+                text: "어른들께 인사를 잘하고 예의를 지키는 것이 중요하다고 생각한다.", 
+                example: "예: 복도에서 선생님을 만나면 멈춰 서서 바르게 인사해요.",
+                type: 3 
+            },
+            { 
+                text: "친구가 어려움에 처했을 때 모른 척하지 않고 도와준다.", 
+                example: "예: 준비물을 안 가져온 친구에게 내 것을 빌려주거나 챙겨줘요.",
+                type: 4 
+            },
+            { 
+                text: "친구들과 사이좋게 지내며, 친구들이 나를 좋아한다.", 
+                example: "예: 친구들이 나랑 놀자고 자주 찾아오고, 나도 친구들 이야기에 귀 기울여요.",
+                type: 4 
+            },
+            { 
+                text: "친구와 다툼이 생겼을 때 대화로 해결하려고 노력한다.", 
+                example: "예: 친구들끼리 싸울 때 중간에서 '우리 이야기로 풀어보자'라고 말해요.",
+                type: 5 
+            },
+            { 
+                text: "나와 다른 의견이라도 존중하고 함께 좋은 방법을 찾으려 한다.", 
+                example: "예: 내 생각과 달라도 '아, 그렇게 생각할 수도 있구나'라고 말해줘요.",
+                type: 5 
+            }
+        ];
+
+        let currentQuestionIdx = 0;
+        let scores = [0, 0, 0, 0, 0, 0]; // 각 상별 점수 저장
+
+        // 요소 가져오기
+        const startScreen = document.getElementById('start-screen');
+        const quizScreen = document.getElementById('quiz-screen');
+        const loadingScreen = document.getElementById('loading-screen');
+        const resultScreen = document.getElementById('result-screen');
+        
+        const questionText = document.getElementById('question-text');
+        const questionExample = document.getElementById('question-example');
+        const progressBar = document.getElementById('progress-bar');
+        const qNumber = document.getElementById('q-number');
+
+        // 퀴즈 시작
+        function startQuiz() {
+            startScreen.classList.add('hidden');
+            quizScreen.classList.remove('hidden');
+            currentQuestionIdx = 0;
+            scores = [0, 0, 0, 0, 0, 0];
+            showQuestion();
+        }
+
+        // 질문 표시
+        function showQuestion() {
+            const q = questions[currentQuestionIdx];
+            questionText.innerText = q.text;
+            questionExample.innerText = q.example; // 예시 텍스트 업데이트
+            qNumber.innerText = currentQuestionIdx + 1;
+            
+            // 프로그레스 바 업데이트
+            const progress = ((currentQuestionIdx) / questions.length) * 100;
+            progressBar.style.width = `${progress}%`;
+        }
+
+        // 답변 선택 핸들러
+        function selectOption(points) {
+            // 현재 질문의 타입(어떤 상인지)에 점수 부여
+            const type = questions[currentQuestionIdx].type;
+            scores[type] += points;
+
+            currentQuestionIdx++;
+
+            if (currentQuestionIdx < questions.length) {
+                showQuestion();
+            } else {
+                finishQuiz();
+            }
+        }
+
+        // 퀴즈 종료 및 로딩
+        function finishQuiz() {
+            quizScreen.classList.add('hidden');
+            loadingScreen.classList.remove('hidden');
+
+            setTimeout(() => {
+                calculateResult();
+            }, 1500);
+        }
+
+        // 결과 계산 및 표시
+        function calculateResult() {
+            loadingScreen.classList.add('hidden');
+            resultScreen.classList.remove('hidden');
+
+            // 최고 점수 찾기
+            let maxScore = -1;
+            let winningIndices = [];
+
+            scores.forEach((score, index) => {
+                if (score > maxScore) {
+                    maxScore = score;
+                    winningIndices = [index];
+                } else if (score === maxScore) {
+                    winningIndices.push(index);
+                }
+            });
+
+            // 동점일 경우 랜덤 선택
+            const finalIndex = winningIndices[Math.floor(Math.random() * winningIndices.length)];
+            const result = awards[finalIndex];
+
+            // UI 업데이트
+            document.getElementById('result-title').innerText = result.title;
+            document.getElementById('result-desc').innerText = result.desc;
+            
+            // 폭죽 효과
+            fireConfetti();
+        }
+
+        // 폭죽 효과 함수
+        function fireConfetti() {
+            var duration = 3 * 1000;
+            var animationEnd = Date.now() + duration;
+            var defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 0 };
+
+            function randomInOut(min, max) {
+                return Math.random() * (max - min) + min;
+            }
+
+            var interval = setInterval(function() {
+                var timeLeft = animationEnd - Date.now();
+
+                if (timeLeft <= 0) {
+                    return clearInterval(interval);
+                }
+
+                var particleCount = 50 * (timeLeft / duration);
+                
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.1, 0.3), y: Math.random() - 0.2 } }));
+                confetti(Object.assign({}, defaults, { particleCount, origin: { x: randomInOut(0.7, 0.9), y: Math.random() - 0.2 } }));
+            }, 250);
+        }
+
+        // 다시하기
+        function restartQuiz() {
+            resultScreen.classList.add('hidden');
+            startScreen.classList.remove('hidden');
+        }
+
+        // 결과 복사
+        function shareResult() {
+            const title = document.getElementById('result-title').innerText;
+            const desc = document.getElementById('result-desc').innerText;
+            
+            const textToCopy = `[졸업식 교육목표 성취도상]\n나의 결과: ${title}\n${desc}`;
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                alert("결과 내용이 복사되었습니다! 친구들에게 공유해보세요.");
+            }).catch(err => {
+                alert("결과: " + title);
+            });
+        }
+    </script>
+</body>
+</html>
